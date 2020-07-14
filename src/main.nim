@@ -1,5 +1,6 @@
 import os
 import net
+import std/wordwrap
 
 proc domain(name: string): string =
     if name[0..8] == "gemini://":
@@ -22,9 +23,13 @@ s.connect(site, Port(1965))
 s.send("gemini://" & site & "/index.gmi" & "\r\n")
 
 while isRunning:
-    if lines.len > 0:
-        lines = s.recvLine()
-        echo lines
+    lines = s.recvLine()
+    if len(lines) > 0:
+        if lines[0..1] == "20":
+            lines = ""
+        elif lines == "```":
+            lines = ""
+        echo lines.wrapWords(80, true)
     else:
         break
 
